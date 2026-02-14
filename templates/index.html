@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Flower Classifier</title>
+</head>
+<body>
+  <h1>Upload Flower Image</h1>
+
+  <form id="uploadForm">
+    <input type="file" id="imageInput" accept="image/*" required />
+    <br><br>
+
+    <!-- แสดงรูป -->
+    <img id="preview" width="300" style="display:none;" />
+    <br><br>
+
+    <button type="submit">Predict</button>
+  </form>
+
+  <h2 id="result"></h2>
+
+  <script>
+    const imageInput = document.getElementById("imageInput");
+    const preview = document.getElementById("preview");
+    const form = document.getElementById("uploadForm");
+
+    // 🔥 แสดง preview ทันทีเมื่อเลือกรูป
+    imageInput.addEventListener("change", () => {
+      const file = imageInput.files[0];
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+      }
+    });
+
+    // 🔥 ส่งไป backend
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const file = imageInput.files[0];
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await fetch("/predict", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+      document.getElementById("result").innerText =
+        "Prediction: " + data.flower;
+    });
+  </script>
+</body>
+</html>
